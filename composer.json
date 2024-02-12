@@ -1,0 +1,11 @@
+{
+	"name": "jalis/jframework",
+	"description": "A web application framework",
+	"autoload": {
+		"psr-4": {
+			"JFramework\\": "jframework/"
+		}
+	},
+	"minimum-stability": "dev",
+	"prefer-stable": true
+}
