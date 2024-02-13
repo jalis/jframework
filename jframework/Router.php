@@ -37,9 +37,16 @@ class Router {
 		}
 	}
 
-	public function route(string $path, array &$_CONTEXT) {
+	/**
+	 * Adds route data to context at key 'route' and route params at key 'params'
+	 * 
+	 * @param string $path		The requested path, usually equal to $_SERVER['REQUEST_URI']
+	 * @param array &$_CONTEXT	App context array
+	 */
+	public function route(string $path, array &$context) {
 		$matches = [];
 		$matched_route = null;
+
 		foreach($this->routes as $route) {
 			if(preg_match($route->regex, $path, $matches)) {
 				$matched_route = $route;
@@ -48,19 +55,12 @@ class Router {
 		}
 		
 		if(!$matched_route) {
-			http_response_code(404);
+			$context['route'] = new \Exception('No route', 1);
+			$context['params'] = false;
 		} else {
-			array_slice($matches, 1);
-			$_CONTEXT['route'] = $matched_route;
-			$_CONTEXT['params'] = $matches;
-
-			(function() use($_CONTEXT) {
-				extract($_CONTEXT['params']);
-
-				require $_CONTEXT['route']->path;
-			})();
-
-			http_response_code(200);
+			unset($matches[0]);
+			$context['route'] = $matched_route;
+			$context['params'] = $matches;
 		}
 	}
 }

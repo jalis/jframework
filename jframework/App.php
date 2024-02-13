@@ -4,9 +4,8 @@ namespace JFramework;
 class App {
 	const VERSION = '0.0.1';
 
-	private string	$app_dir;
-	private string	$config_file;
-	private array	$config;
+	private string	$app_dir, $config_file;
+	private array	$config, $middlewares = [];
 
 	private Router	$router;
 
@@ -30,13 +29,14 @@ class App {
 		$this->config_file = "$this->app_dir/$config_file";
 
 		if(is_file($this->config_file)) {
-			$config = require $this->config_file;
+			$config = (function($app) {
+				return require $this->config_file;
+			})($this);
 
 			if(!is_array($config)) {
 				throw new \Exception("Config file '$this->config_file' does not return an array");
 			}
 		}
-
 
 		if(isset($config)) {
 			$this->config = $config + [
@@ -56,7 +56,29 @@ class App {
 		$this->router->scandir($this->app_dir . DIRECTORY_SEPARATOR . $this->config['routes_dir']);
 	}
 
+	/**
+	 * Registers middleware to be used with the app
+	 * 
+	 * @param callable(&array):void	$middleware	Callable that takes a reference to the context array
+	 */
+	public function middleware(callable $middleware) {
+		$this->middlewares[] = $middleware;
+	}
+
+	/**
+	 * Runs the appropriate route with middleware
+	 */
 	public function run() {
 		$this->router->route($_SERVER['REQUEST_URI'], $this->context);
+
+		if($this->context['route'] instanceof \Exception) throw $this->context['route'];
+
+		foreach($this->middlewares as $middleware) $middleware($this->context);
+
+		(function($_CONTEXT) {
+			extract($_CONTEXT['params']);
+
+			require $_CONTEXT['route']->path;
+		})($this->context);
 	}
 }
