@@ -26,3 +26,6 @@ Defaults for the config array:
 	'lib_dir'		=> 'lib'
 ];
 ```
+
+## Routes
+TODO
