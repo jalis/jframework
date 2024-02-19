@@ -7,5 +7,5 @@ namespace JFramework\Router;
  */
 class Route {
 	public string	$path, $uri, $regex;
-	public int		$weight;
+	public int		$weight, $depth;
 }
