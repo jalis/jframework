@@ -39,5 +39,5 @@ For example, if a client requested `/api/user/1/`, the request would be directed
 
 
 ## TODO
-Add support for `layout.php` files in routes directory, which will be ran before `page.php`, with `page.php` output being inserted into `layout.php`'s output at some control symbol, for example `{content}`, similarly to SvelteKit's `<slot>` syntax.
-Add support for `hooks.php` at the root of app dir (default, with configurable path), which would get called before all routes, for example to populate `$_CONTEXT`.
+- Add support for `layout.php` files in routes directory, which will be ran before `page.php`, with `page.php` output being inserted into `layout.php`'s output at some control symbol, for example `{content}`, similarly to SvelteKit's `<slot>` syntax.
+- Add support for `hooks.php` at the root of app dir (default, with configurable path), which would get called before all routes, for example to populate `$_CONTEXT`.
