@@ -37,6 +37,8 @@ class Router {
 		$escaped_uri = str_replace(['\[', '\]'], ['[', ']'], $escaped_uri);
 		$route->regex = '/^' . preg_replace('/\[([^\/]*?)\]/', '(?<$1>[^\/]*)', $escaped_uri, -1, $route->weight) . '\/?$/';
 
+		echo htmlspecialchars($route->regex) . "<br>\n";
+
 		$this->routes[] = $route;
 	}
 
@@ -59,6 +61,7 @@ class Router {
 		$matches = [];
 		$matched_route = null;
 
+		$path = rtrim($path, '/');
 		$depth = substr_count($path, '/');
 		foreach(array_filter($this->routes, fn($route) => $route->depth === $depth) as $route) {
 			if(preg_match($route->regex, $path, $matches)) {
