@@ -1,31 +1,38 @@
 # JFramework
 ## Usage
-Create a new `JFramework\App`, passing it the app directory filepath and optionally the config file path relative to the app directory.
-If the config file doesn't exist (default relative path: `config.php`) then the App will throw an exception.
+Create a new `JFramework\App`, passing it the app directory filepath and optionally the config array.
 
 ```php
 $app = new JFramework\App(__DIR__);
 $app->run();
 ```
-## Config file
-The config file is invoked with the App in scope as `$app`. Register middleware with the `JFramework\App::middleware(callable)` method.
-The config file must return an array, and that will be stored in the app as `$config`. Currently this is only used to define the router used by the app, the `routes` directory and the `lib` directory. Directory paths are relative to app directory filepath.
-
-Example config file:
-```php
-$app->middleware(fn(&$context) => $context['test'] = 'Example middleware');
-
-return [];
-```
-
-Defaults for the config array:
+### Config
+Defaults for the config array, as well as every key used by the router:
 ```php
 [
-	'router'		=> \JFramework\Router::class,
-	'routes_dir'	=> 'routes',
-	'lib_dir'		=> 'lib'
+	'router'		=> \JFramework\Router::class, // No true checking as of yet, ducktyping will work
+	'routes_dir'	=> 'routes', // Relative to app dir, passed to App
+	'lib_dir'		=> 'lib' // Same as above
 ];
 ```
 
 ## Routes
-TODO
+The `routes` directory will use the directory structure to route requests to page.php and server.php files within.
+
+### Parameters
+Routes can have named wildcards that will be provided to routed files in scope with their names. In addition, a `$_CONTEXT` array will be provided as well, which hooks (middleware) can populate, however this is not yet implemented.
+
+Example routes directory tree:
+```
+src/routes/
+├── [slug]
+│   └── page.php
+├── api
+│   ├── page
+│   └── user
+│       ├── [id]
+│       │   └── page.php
+│       └── server.php
+└── page.php
+```
+For example, if a client requested `/api/user/1/`, the request would be directed to `src/routes/api/page/[id]/page.php`, where its scope would have `$id = "1"`.
