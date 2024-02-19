@@ -37,8 +37,6 @@ class Router {
 		$escaped_uri = str_replace(['\[', '\]'], ['[', ']'], $escaped_uri);
 		$route->regex = '/^' . preg_replace('/\[([^\/]*?)\]/', '(?<$1>[^\/]*)', $escaped_uri, -1, $route->weight) . '\/?$/';
 
-		echo htmlspecialchars($route->regex) . "<br>\n";
-
 		$this->routes[] = $route;
 	}
 
